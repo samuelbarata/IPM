@@ -161,17 +161,30 @@ void drawTarget(int i)
 {
   Target target = getTargetBounds(i);   // get the location and size for the circle with ID:i
   
-  // check whether current circle is the intended target
-  if (trials.get(trialNum) == i) 
-  { 
-    // if so ...
-    stroke((220));     // stroke light gray
-    strokeWeight(2);   // stroke weight 2 
-  }
+  fill(30);           // fill dark gray
 
-  fill(155);           // fill dark gray
+  // check whether current circle is the intended target
+    try{
+        //target atual
+        if (trials.get(trialNum) == i){ 
+            stroke(255, 255, 0);     //contorno amarelo
+            strokeWeight(5);         //contorno 5
+            fill(255,0,0);            //interior vermelho
+        
+            //se igual ao seguinte
+            if(trials.get(trialNum+1)==trials.get(trialNum)){
+                fill(0,0,255);  //interior azul
+            }
+        }
+        else{
+            //target seguinte
+            if (trials.get(trialNum+1) == i){ 
+                strokeWeight(0);         //sem contorno
+                fill(150,150,0);          //interior amarelo claro
+            }
+        }
+    } catch (IndexOutOfBoundsException e){/*ultimo elemento estaria "fora" da lista*/;}
+    circle(target.x, target.y, target.w);   // draw target
   
-  circle(target.x, target.y, target.w);   // draw target
-  
-  noStroke();    // next targets won't have stroke (unless it is the intended target)
+    noStroke();    // next targets won't have stroke (unless it is the intended target)
 }
