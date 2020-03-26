@@ -1,4 +1,6 @@
 .DS_Store
 ~$*
 *.swp
-
+BakeOff1/**/*
+BakeOff1
+results*

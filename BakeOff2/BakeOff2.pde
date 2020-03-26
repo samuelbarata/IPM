@@ -29,8 +29,8 @@ int misses                 = 0;      // number of missed clicks
 // Class used to store properties of a target
 class Target
 {
-  int x, y;
-  float w;
+  public int x, y;
+  public float w;
   
   Target(int posx, int posy, float twidth) 
   {
@@ -57,7 +57,7 @@ void setup()
 // Updates UI - this method is constantly being called and drawing targets
 void draw()
 {
- 
+  
   if(hasEnded()) 
     return;            // nothing else to do; study is over
     
@@ -69,6 +69,7 @@ void draw()
 
   // Draw targets
   for (int i = 0; i < 16; i++) drawTarget(i);
+  drawHelper(trials.get(trialNum), new Target(0,0,0));
 }
 
 boolean hasEnded() {
@@ -170,7 +171,6 @@ void drawTarget(int i)
             stroke(255, 255, 0);     //contorno amarelo
             strokeWeight(5);         //contorno 5
             fill(255,0,0);            //interior vermelho
-        
             //se igual ao seguinte
             if(trials.get(trialNum+1)==trials.get(trialNum)){
                 fill(0,0,255);  //interior azul
@@ -187,4 +187,13 @@ void drawTarget(int i)
     circle(target.x, target.y, target.w);   // draw target
   
     noStroke();    // next targets won't have stroke (unless it is the intended target)
+}
+
+void drawHelper(int i, Target target){
+  target.x = (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  target.y = (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  target.w = sqrt(pow(target.x-mouseX,2) + pow(target.y-mouseY,2))*2;
+  fill(0,255,0, 70);
+  circle(target.x, target.y, target.w);
+  noStroke();
 }
