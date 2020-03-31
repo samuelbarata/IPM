@@ -16,6 +16,8 @@ final float MARGIN           = 1.5 * PPCM;   // set the margin around the target
 
 // Study properties
 ArrayList<Integer> trials  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
+ArrayList<Integer> trialsAux  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
+
 int trialNum               = 0;                           // the current trial number (indexes into trials array above)
 final int NUM_REPEATS      = 3;                           // sets the number of times each target repeats in the test - FOR THE BAKEOFF NEEDS TO BE 3!
 boolean ended              = false;
@@ -52,12 +54,12 @@ void setup()
   textAlign(CENTER);                    // align text
   
   randomizeTrials();    // randomize the trial order for each participant
+  
 }
 
 // Updates UI - this method is constantly being called and drawing targets
 void draw()
 {
-  
   if(hasEnded()) 
     return;            // nothing else to do; study is over
     
@@ -69,7 +71,7 @@ void draw()
 
   // Draw targets
   for (int i = 0; i < 16; i++) drawTarget(i);
-  drawHelper(trials.get(trialNum), new Target(0,0,0));
+  drawHelper(trialsAux.get(trialNum), new Target(0,0,0), trialsAux.get(trialNum+1), new Target(0,0,0));
 }
 
 boolean hasEnded() {
@@ -95,7 +97,12 @@ void randomizeTrials()
   for (int i = 0; i < 16; i++)             // 4 rows times 4 columns = 16 target
     for (int k = 0; k < NUM_REPEATS; k++)  // each target will repeat 'NUM_REPEATS' times
       trials.add(i);
+
   Collections.shuffle(trials);             // randomize the trial order
+  for(int i:trials){
+     trialsAux.add(i); 
+  }
+  trialsAux.add(-1);
   
   System.out.println("trial order: " + trials);    // prints trial order - for debug purposes
 }
@@ -160,43 +167,52 @@ Target getTargetBounds(int i)
 // This method is called in every draw cycle; you can update the target's UI here
 void drawTarget(int i)
 {
-  Target target = getTargetBounds(i);   // get the location and size for the circle with ID:i
+    Target target = getTargetBounds(i);   // get the location and size for the circle with ID:i
   
-  fill(30);           // fill dark gray
-
-  // check whether current circle is the intended target
-    try{
-        //target atual
-        if (trials.get(trialNum) == i){ 
-            stroke(255, 255, 0);     //contorno amarelo
-            strokeWeight(5);         //contorno 5
-            fill(255,0,0);            //interior vermelho
-            //se igual ao seguinte
-            if(trials.get(trialNum+1)==trials.get(trialNum)){
-                fill(0,0,255);  //interior azul
-            }
-            if(dist(target.x, target.y, mouseX, mouseY) < target.w/2){
-                fill(0,255,0);
-            }
+    fill(30);           // fill dark gray
+    //target atual
+    if (trials.get(trialNum) == i){ 
+        stroke(255, 255, 0);     //contorno amarelo
+        strokeWeight(5);         //contorno 5px
+        fill(255,0,0);           //interior vermelho
+        //se igual ao seguinte
+        if(trialsAux.get(trialNum+1)==trials.get(trialNum)){
+            fill(0,0,255);       //interior azul
         }
-        else{
-            //target seguinte
-            if (trials.get(trialNum+1) == i){ 
-                strokeWeight(0);         //sem contorno
-                fill(150,150,0);          //interior amarelo claro
-            }
+        if(dist(target.x, target.y, mouseX, mouseY) < target.w/2){
+            fill(0,255,0);       //verde se o rato estiver por cima do target
         }
-    } catch (IndexOutOfBoundsException e){/*ultimo elemento estaria "fora" da lista*/;}
+    }
+    else{
+        //target seguinte
+        if (trialsAux.get(trialNum+1)==i){ 
+            strokeWeight(0);         //sem contorno
+            fill(150,150,0);          //interior amarelo claro
+        }
+    }
     circle(target.x, target.y, target.w);   // draw target
-  
-    noStroke();    // next targets won't have stroke (unless it is the intended target)
+    noStroke();    // next targets won't have stroke
 }
 
-void drawHelper(int i, Target target){
+void drawHelper(int i, Target target, int k, Target next){
+  noStroke();
   target.x = (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
   target.y = (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
   target.w = sqrt(pow(target.x-mouseX,2) + pow(target.y-mouseY,2))*2;
+  if(k!=-1){
+    next.x = (int)((k % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+    next.y = (int)((k / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  }
   fill(0,255,0, 70);
   circle(target.x, target.y, target.w);
   noStroke();
+  strokeWeight(5);
+  stroke(0,255,0);
+  line(target.x, target.y, mouseX, mouseY);
+  stroke(255,255,0);
+  strokeWeight(1);
+  if(k!=-1)
+    line(target.x, target.y, next.x, next.y);
+  noStroke();
+
 }
