@@ -175,6 +175,9 @@ void drawTarget(int i)
             if(trials.get(trialNum+1)==trials.get(trialNum)){
                 fill(0,0,255);  //interior azul
             }
+            if(dist(target.x, target.y, mouseX, mouseY) < target.w/2){
+                fill(0,255,0);
+            }
         }
         else{
             //target seguinte
