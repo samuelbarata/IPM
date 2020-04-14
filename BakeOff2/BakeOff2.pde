@@ -166,12 +166,11 @@ void mouseReleased()
 // For a given target ID, returns its location and size
 Target getTargetBounds(int i)
 {
-  int x = (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  int y = (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  
-  return new Target(x, y, TARGET_SIZE/2);
-}
+  int x = (int)LEFT_PADDING + (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  int y = (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
 
+  return new Target(x, y, TARGET_SIZE);
+}
 // Draw target on-screen
 // This method is called in every draw cycle; you can update the target's UI here
 void drawTarget(int i)
@@ -205,12 +204,12 @@ void drawTarget(int i)
 
 void drawHelper(int i, Target target, int k, Target next){
   noStroke();
-  target.x = (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  target.y = (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  target.x = (int)LEFT_PADDING +(int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  target.y = (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
   target.w = sqrt(pow(target.x-mouseX,2) + pow(target.y-mouseY,2))*2;
   if(k!=-1){
-    next.x = (int)((k % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-    next.y = (int)((k / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+    next.x = (int)LEFT_PADDING +(int)((k % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+    next.y = (int)TOP_PADDING + (int)((k / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
   }
   fill(0,255,0, 70);
   circle(target.x, target.y, target.w);
