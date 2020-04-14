@@ -6,10 +6,6 @@
 // Processing reference: https://processing.org/reference/
 
 import java.util.Collections;
-import java.awt.*;
-import java.awt.event.*;
-
-Robot robot;
 
  // Target properties
 float PPI, PPCM;
@@ -75,14 +71,6 @@ void setup()
   for(int i = 0; i<=16; i++){
       x.add((int)LEFT_PADDING + (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
       y.add((int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
-  }
-  
-  try{ 
-    robot = new Robot();
-    robot.setAutoDelay(0);
-  }
-  catch(Exception e){
-    println(e);
   }
   
 }
@@ -183,10 +171,9 @@ void mousePressed()
   
   Target target = getTargetBounds(trials.get(trialNum));    // get the location and size for the target in the current trial
   int i = findCloser();
-  robot.mouseMove(x.get(i), y.get(i));
   
   // Check to see if mouse cursor is inside the target bounds
-  if(dist(target.x, target.y, mouseX, mouseY) < target.w/2)
+  if(dist(target.x, target.y, x.get(i), y.get(i)) < target.w/2)
   {
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime));     // success - hit!
     hits++; // increases hits counter 
