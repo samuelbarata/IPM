@@ -6,6 +6,10 @@
 // Processing reference: https://processing.org/reference/
 
 import java.util.Collections;
+import java.awt.*;
+import java.awt.event.*;
+
+Robot robot;
 
  // Target properties
 float PPI, PPCM;
@@ -14,8 +18,11 @@ float TARGET_SIZE;
 float TARGET_PADDING, MARGIN, LEFT_PADDING, TOP_PADDING;
 
 // Study properties
-ArrayList<Integer> trials  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
-ArrayList<Integer> trialsAux  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
+ArrayList<Integer> trials  = new ArrayList<Integer>();      // contains the order of targets that activate in the test
+ArrayList<Integer> trialsAux  = new ArrayList<Integer>();  // contains the order of targets that activate in the test
+ArrayList<Integer> x  = new ArrayList<Integer>();          //x position of targets
+ArrayList<Integer> y  = new ArrayList<Integer>();          //y position of targets
+
 
 int trialNum               = 0;                           // the current trial number (indexes into trials array above)
 final int NUM_REPEATS      = 3;                           // sets the number of times each target repeats in the test - FOR THE BAKEOFF NEEDS TO BE 3!
@@ -64,6 +71,20 @@ void setup()
   textAlign(CENTER);                    // align text
   
   randomizeTrials();    // randomize the trial order for each participant
+  
+  for(int i = 0; i<=16; i++){
+      x.add((int)LEFT_PADDING + (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
+      y.add((int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
+  }
+  
+  try{ 
+    robot = new Robot();
+    robot.setAutoDelay(0);
+  }
+  catch(Exception e){
+    println(e);
+  }
+  
 }
 
 // Updates UI - this method is constantly being called and drawing targets
@@ -135,8 +156,22 @@ void printResults(float timeTaken, float penalty)
   saveFrame("results-######.png");    // saves screenshot in current folder
 }
 
+int findCloser(){
+    float tamanho;
+    int bola=0;
+    float min=69696969.0;
+    for(int contador=0; contador<17; contador++){
+      tamanho = sqrt(pow(x.get(contador)-mouseX,2) + pow(y.get(contador)-mouseY,2))*2;
+      if (tamanho < min){
+        min = tamanho;
+        bola = contador;
+      }
+    }
+    return bola;
+}
+
 // Mouse button was release - lets test to see if hit was in the correct target
-void mouseReleased() 
+void mousePressed() 
 {
   if (trialNum >= trials.size()) return;      // if study is over, just return
   if (trialNum == 0) startTime = millis();    // check if first click, if so, start timer
@@ -147,6 +182,8 @@ void mouseReleased()
   }
   
   Target target = getTargetBounds(trials.get(trialNum));    // get the location and size for the target in the current trial
+  int i = findCloser();
+  robot.mouseMove(x.get(i), y.get(i));
   
   // Check to see if mouse cursor is inside the target bounds
   if(dist(target.x, target.y, mouseX, mouseY) < target.w/2)
@@ -222,5 +259,4 @@ void drawHelper(int i, Target target, int k, Target next){
   if(k!=-1)
     line(target.x, target.y, next.x, next.y);
   noStroke();
-
 }
