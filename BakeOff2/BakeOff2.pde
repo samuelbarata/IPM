@@ -7,12 +7,11 @@
 
 import java.util.Collections;
 
-// Target properties
-final float PPI            = 227;            // http://dpi.lv/ (Macbook Pro 13 Retina: 227) - CHANGE TO YOUR DISPLAY PPI!
-final float PPCM           = PPI / 2.54;     // do not change this!
-final float TARGET_SIZE    = 1.5 * PPCM;     // set the target size in cm; do not change this!
-final float TARGET_PADDING   = 0.1 * PPCM;   // set the padding around the targets in cm; do not change this!
-final float MARGIN           = 1.5 * PPCM;   // set the margin around the targets in cm; do not change this!
+ // Target properties
+float PPI, PPCM;
+float SCALE_FACTOR;
+float TARGET_SIZE;
+float TARGET_PADDING, MARGIN, LEFT_PADDING, TOP_PADDING;
 
 // Study properties
 ArrayList<Integer> trials  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
@@ -45,16 +44,26 @@ class Target
 // Setup window and vars - runs once
 void setup()
 {
-  size(700, 700);    // window size in px
+  fullScreen();                // USE THIS DURING THE BAKEOFF!
+  
+  SCALE_FACTOR    = 1.0 / displayDensity();            // scale factor for high-density displays
+  String[] ppi_string = loadStrings("ppi.txt");        // The text from the file is loaded into an array.
+  PPI            = float(ppi_string[1]);               // set PPI, we assume the ppi value is in the second line of the .txt
+  PPCM           = PPI / 2.54 * SCALE_FACTOR;          // do not change this!
+  TARGET_SIZE    = 1.5 * PPCM;                         // set the target size in cm; do not change this!
+  TARGET_PADDING = 1.5 * PPCM;                         // set the padding around the targets in cm; do not change this!
+  MARGIN         = 1.5 * PPCM;                         // set the margin around the targets in cm; do not change this!
+  LEFT_PADDING   = width/2 - TARGET_SIZE - 1.5*TARGET_PADDING - 1.5*MARGIN;        // set the margin of the grid of targets to the left of the canvas; do not change this!
+  TOP_PADDING    = height/2 - TARGET_SIZE - 1.5*TARGET_PADDING - 1.5*MARGIN;       // set the margin of the grid of targets to the top of the canvas; do not change this!
+  
   noStroke();        // draw shapes without outlines
   frameRate(60);     // set frame rate
-  
+
   // Text and font setup
   textFont(createFont("Arial", 16));    // sets the font to Arial size 16
   textAlign(CENTER);                    // align text
   
   randomizeTrials();    // randomize the trial order for each participant
-  
 }
 
 // Updates UI - this method is constantly being called and drawing targets
