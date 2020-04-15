@@ -5,3 +5,5 @@ BakeOff1/**/*
 BakeOff1
 results*
 ppi.txt
+BakeOff2/application*
+.autosave
