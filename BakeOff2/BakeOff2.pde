@@ -16,10 +16,10 @@ float TARGET_PADDING, MARGIN, LEFT_PADDING, TOP_PADDING;
 
 // Study properties
 ArrayList<Integer> trials  = new ArrayList<Integer>();      // contains the order of targets that activate in the test
-ArrayList<Integer> trialsAux  = new ArrayList<Integer>();  // contains the order of targets that activate in the test
 ArrayList<Integer> x  = new ArrayList<Integer>();          //x position of targets
 ArrayList<Integer> y  = new ArrayList<Integer>();          //y position of targets
-
+ArrayList<Target> targets = new ArrayList<Target>();        // cursor
+Target cursor;
 
 int trialNum               = 0;                           // the current trial number (indexes into trials array above)
 final int NUM_REPEATS      = 3;                           // sets the number of times each target repeats in the test - FOR THE BAKEOFF NEEDS TO BE 3!
@@ -36,6 +36,7 @@ class Target
 {
   public int x, y;
   public float w;
+  public int strokeR, strokeG, strokeB, r,g,b, strokeWeight=0;
   
   Target(int posx, int posy, float twidth) 
   {
@@ -43,13 +44,70 @@ class Target
     y = posy;
     w = twidth;
   }
+  public void draw(){
+    noStroke();
+    noFill();
+    if(strokeWeight>0){
+      stroke(strokeR,strokeG,strokeB);
+      strokeWeight(strokeWeight);
+    }
+    if(r>=0){
+        fill(r,g,b);
+    }
+    circle(x,y,w);
+  }
+  public void imTarget(){
+      r=255;
+      g=0;
+      b=0;
+      strokeWeight=5;
+      strokeR=255;
+      strokeG=255;
+      strokeB=0;
+  }
+  public void imNext(){
+      r=150;
+      g=150;
+      b=0;
+      strokeWeight=0;
+  }
+  public void imNormal(){
+      r=119;
+      g=119;
+      b=119;
+      strokeWeight=0;
+  }
+  public void imDouble(){
+      r=0;
+      g=0;
+      b=255;
+      strokeWeight=5;
+      strokeR=255;
+      strokeG=255;
+      strokeB=0;
+  }
+  public void mouseOn(){
+      strokeWeight=20;
+      strokeR=0;
+      strokeG=255;
+      strokeB=0;
+      
+      this.draw();
+  }
+  public void imCursor(){
+      r=0;
+      g=255;
+      b=0;
+      strokeWeight=0;
+  }
 }
 
 // Setup window and vars - runs once
 void setup()
 {
   fullScreen();                // USE THIS DURING THE BAKEOFF!
-  
+  cursor = new Target(mouseX, mouseY,0);
+  cursor.imCursor();
   SCALE_FACTOR    = 1.0 / displayDensity();            // scale factor for high-density displays
   String[] ppi_string = loadStrings("ppi.txt");        // The text from the file is loaded into an array.
   PPI            = float(ppi_string[1]);               // set PPI, we assume the ppi value is in the second line of the .txt
@@ -70,6 +128,7 @@ void setup()
   randomizeTrials();    // randomize the trial order for each participant
   
   for(int i = 0; i<=16; i++){
+      targets.add(new Target(getX(i), getY(i), TARGET_SIZE));
       x.add(getX(i));
       y.add(getY(i));
   }
@@ -87,8 +146,15 @@ void draw()
   // Print trial count
   fill(255);          // set text fill color to white
   text("Trial " + (trialNum + 1) + " of " + trials.size(), 50, 20);    // display what trial the participant is on (the top-left corner)
-
-  drawHelper(trialsAux.get(trialNum), new Target(0,0,0), trialsAux.get(trialNum+1)); 
+  
+  int atual = trials.get(trialNum);
+  int next;
+  try{
+      next = trials.get(trialNum+1);
+  } catch(IndexOutOfBoundsException e){
+      next=-1;
+  }
+  drawHelper(atual, next); 
 }
 
 boolean hasEnded() {
@@ -116,10 +182,6 @@ void randomizeTrials()
       trials.add(i);
 
   Collections.shuffle(trials);             // randomize the trial order
-  for(int i:trials){
-     trialsAux.add(i); 
-  }
-  trialsAux.add(-1);
   
   System.out.println("trial order: " + trials);    // prints trial order - for debug purposes
 }
@@ -140,7 +202,7 @@ void printResults(float timeTaken, float penalty)
   text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
   text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
   
-  saveFrame("results-######.png");    // saves screenshot in current folder
+  saveFrame("grupo4-results-######.png");    // saves screenshot in current folder
 }
 
 int findCloser(){
@@ -198,41 +260,38 @@ Target getTargetBounds(int i)
 // This method is called in every draw cycle; you can update the target's UI here
 void drawTarget(int i)
 {
-    noStroke();
-    Target target = getTargetBounds(i);   // get the location and size for the circle with ID:i
-    fill(30);           // fill dark gray
+    Target target = targets.get(i);   // get the location and size for the circle with ID:i
+    target.imNormal();
+    
     //target atual
     if (trials.get(trialNum) == i){ 
-        stroke(255, 255, 0);     //contorno amarelo
-        strokeWeight(5);         //contorno 5px
-        fill(255,0,0);           //interior vermelho
+        target.imTarget();
         //se igual ao seguinte
-        if(trialsAux.get(trialNum+1)==trials.get(trialNum)){
-            fill(0,0,255);       //interior azul
-        }
-        if(dist(target.x, target.y, mouseX, mouseY) < target.w/2){
-            fill(0,255,0);       //verde se o rato estiver por cima do target
-        }
+        try{
+          if(trials.get(trialNum+1)==trials.get(trialNum)){
+            target.imDouble();
+          }
+        }catch(IndexOutOfBoundsException e){}
     }
     else{
         //target seguinte
-        if (trialsAux.get(trialNum+1)==i){ 
-            strokeWeight(0);         //sem contorno
-            fill(150,150,0);          //interior amarelo claro
-        }
+        try{
+          if (trials.get(trialNum+1)==i){ 
+              target.imNext();
+          }
+        }catch(IndexOutOfBoundsException e){}
     }
-    circle(target.x, target.y, target.w);   // draw target
-    noStroke();    // next targets won't have stroke
+    target.draw();
 }
 int getX(int i){
-  return (int)LEFT_PADDING +(int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+    return (int)LEFT_PADDING +(int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
 }
 int getY(int i){
     return (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
 }
-void drawHelper(int i, Target target, int k){  
+void drawHelper(int i, int k){  
   //desenha rato
-  drawMouse(target);
+  drawMouse();
   //desenha targets
   for (int u = 0; u < 16; u++) drawTarget(u);
   //desenha linha
@@ -245,17 +304,14 @@ void drawHelper(int i, Target target, int k){
 }
 
 
-void drawMouse(Target target){
+void drawMouse(){
     int i = findCloser();
-    target.x = mouseX;
-    target.y = mouseY;
-    target.w = (sqrt(pow(getX(i)-mouseX,2) + pow(getY(i)-mouseY,2))*2)-(TARGET_SIZE+1);    
+    cursor.x = mouseX;
+    cursor.y = mouseY;
+    cursor.w = (sqrt(pow(getX(i)-mouseX,2) + pow(getY(i)-mouseY,2))*2)-(TARGET_SIZE+1);    
 
-    fill(0,255,0);
-    noStroke();
-    circle(target.x, target.y, target.w);
-    stroke(0,255,0);
-    strokeWeight(20);
-    noFill();
-    circle(getX(i),getY(i), TARGET_SIZE);
+    cursor.draw();
+    
+    //target mais proximo
+    targets.get(i).mouseOn();
 }
