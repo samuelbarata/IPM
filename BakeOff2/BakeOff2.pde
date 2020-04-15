@@ -7,6 +7,7 @@
 
 import java.util.Collections;
 
+
  // Target properties
 float PPI, PPCM;
 float SCALE_FACTOR;
@@ -69,8 +70,8 @@ void setup()
   randomizeTrials();    // randomize the trial order for each participant
   
   for(int i = 0; i<=16; i++){
-      x.add((int)LEFT_PADDING + (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
-      y.add((int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN));
+      x.add(getX(i));
+      y.add(getY(i));
   }
   
 }
@@ -87,9 +88,7 @@ void draw()
   fill(255);          // set text fill color to white
   text("Trial " + (trialNum + 1) + " of " + trials.size(), 50, 20);    // display what trial the participant is on (the top-left corner)
 
-  // Draw targets
-  for (int i = 0; i < 16; i++) drawTarget(i);
-  drawHelper(trialsAux.get(trialNum), new Target(0,0,0), trialsAux.get(trialNum+1), new Target(0,0,0));
+  drawHelper(trialsAux.get(trialNum), new Target(0,0,0), trialsAux.get(trialNum+1)); 
 }
 
 boolean hasEnded() {
@@ -148,7 +147,7 @@ int findCloser(){
     float tamanho;
     int bola=0;
     float min=69696969.0;
-    for(int contador=0; contador<17; contador++){
+    for(int contador=0; contador<16; contador++){
       tamanho = sqrt(pow(x.get(contador)-mouseX,2) + pow(y.get(contador)-mouseY,2))*2;
       if (tamanho < min){
         min = tamanho;
@@ -190,8 +189,8 @@ void mousePressed()
 // For a given target ID, returns its location and size
 Target getTargetBounds(int i)
 {
-  int x = (int)LEFT_PADDING + (int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  int y = (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+  int x = getX(i);
+  int y = getY(i);
 
   return new Target(x, y, TARGET_SIZE);
 }
@@ -199,8 +198,8 @@ Target getTargetBounds(int i)
 // This method is called in every draw cycle; you can update the target's UI here
 void drawTarget(int i)
 {
+    noStroke();
     Target target = getTargetBounds(i);   // get the location and size for the circle with ID:i
-  
     fill(30);           // fill dark gray
     //target atual
     if (trials.get(trialNum) == i){ 
@@ -225,25 +224,38 @@ void drawTarget(int i)
     circle(target.x, target.y, target.w);   // draw target
     noStroke();    // next targets won't have stroke
 }
-
-void drawHelper(int i, Target target, int k, Target next){
-  noStroke();
-  target.x = (int)LEFT_PADDING +(int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  target.y = (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  target.w = sqrt(pow(target.x-mouseX,2) + pow(target.y-mouseY,2))*2;
-  if(k!=-1){
-    next.x = (int)LEFT_PADDING +(int)((k % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-    next.y = (int)TOP_PADDING + (int)((k / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
-  }
-  fill(0,255,0, 70);
-  circle(target.x, target.y, target.w);
-  noStroke();
-  strokeWeight(5);
-  stroke(0,255,0);
-  line(target.x, target.y, mouseX, mouseY);
+int getX(int i){
+  return (int)LEFT_PADDING +(int)((i % 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+}
+int getY(int i){
+    return (int)TOP_PADDING + (int)((i / 4) * (TARGET_SIZE + TARGET_PADDING) + MARGIN);
+}
+void drawHelper(int i, Target target, int k){  
+  //desenha rato
+  drawMouse(target);
+  //desenha targets
+  for (int u = 0; u < 16; u++) drawTarget(u);
+  //desenha linha
   stroke(255,255,0);
   strokeWeight(1);
   if(k!=-1)
-    line(target.x, target.y, next.x, next.y);
+    line(getX(i), getY(i), getX(k), getY(k));
   noStroke();
+  
+}
+
+
+void drawMouse(Target target){
+    int i = findCloser();
+    target.x = mouseX;
+    target.y = mouseY;
+    target.w = (sqrt(pow(getX(i)-mouseX,2) + pow(getY(i)-mouseY,2))*2)-(TARGET_SIZE+1);    
+
+    fill(0,255,0);
+    noStroke();
+    circle(target.x, target.y, target.w);
+    stroke(0,255,0);
+    strokeWeight(20);
+    noFill();
+    circle(getX(i),getY(i), TARGET_SIZE);
 }
