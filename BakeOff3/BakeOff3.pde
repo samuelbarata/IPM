@@ -44,14 +44,127 @@ float errorsTotal          = 0;     // a running total of the number of errors (
 
 
 //
-String[] dicionario;
+int DRAG_OFFSET = 10;
+ArrayList<String> dicionario;
+float minX, minY, comp, alt;
+String topText="NOT INTERACTIVE";
+String[] caracteres={" abc", " def", " ghi", "  jkl", "  mn", " opq", "  rst", " uvw", " xyz"};
+float clickX, clickY;
+int row, col;    //linha e coluna clicadas
+Sentence frase;
+
+public class Key{
+    public Integer _key;
+    public Key(int key){
+      _key=key;
+    }
+}
+public class Word{
+   public ArrayList<Key> _keys;
+   public String _probable = "i";
+   
+   public Word(){
+       _keys = new ArrayList();
+   }
+   public void addKey(Key key){
+       _keys.add(key);
+       analyse();
+   }
+   public void deleteKey(){
+       if(_keys.size()>0)
+           _keys.remove(_keys.size()-1);
+       analyse();
+   }
+   public String getWord(){
+       return _probable;
+   }
+   private void analyse(){
+       if(_keys.size()==0){
+           _probable = "?";
+           topText=_probable;
+           System.out.println("Br0");
+           return;
+       }
+       boolean aux = false;
+       for(String k:dicionario){            //percorre dicionario
+           if(k.length() < _keys.size()) continue;        //compara tamanho palavras
+           aux=true;
+           for(int i = 0; i<_keys.size();i++){//compara os caracteres
+               char[] ch = k.toCharArray();
+               if(!isKey(_keys.get(i), ch[i])){
+                   aux=false;
+                   break;
+               }
+           }
+           if(aux){
+               _probable = k;
+               topText=_probable;
+               return;
+           }
+       }
+       _probable = "?";
+       topText=_probable;
+       System.out.println("Bro");
+   }
+   private boolean isKey(Key key, char c){
+       switch(key._key){
+         case 0:
+             return c=='a' || c=='b' || c=='c';
+         case 1:
+             return c=='d' || c=='e' || c=='f';
+         case 2:
+             return c=='g' || c=='h' || c=='i';
+         case 3:
+             return c=='j' || c=='k' || c=='l';
+         case 4:
+             return c=='m' || c=='n';
+         case 5:
+             return c=='o' || c=='p' || c=='q';
+         case 6:
+             return c=='r' || c=='s' || c=='t';
+         case 7:
+             return c=='u' || c=='v' || c=='w';
+         case 8:
+             return c=='x' || c=='y' || c=='z';
+       }
+       return false;
+   }
+}
+public class Sentence{
+   public ArrayList<Word> _words;
+   public Sentence(){
+       _words = new ArrayList();
+       addWord();
+   }
+   public void addWord(Word word){
+       _words.add(word);
+   }
+   public void addWord(){
+       addWord(new Word());
+   }
+   /**
+     returns current word
+   */
+   public Word getWord(){
+       return _words.get(_words.size()-1);
+   }
+}
+
 
 //Setup window and vars - runs once
 void setup()
 {
-  dicionario = loadStrings("palavras.txt");
-  //size(900, 900);
-  fullScreen();
+  String[] tmp;
+  dicionario = new ArrayList();
+  frase = new Sentence();
+  tmp = loadStrings("palavras.txt");
+  for (int i=0; i<tmp.length; i++) {
+      dicionario.add(tmp[i]);
+  }
+  
+  size(900, 900);
+  //fullScreen();
+
   textFont(createFont("Arial", 24));  // set the font to arial 24
   noCursor();                         // hides the cursor to emulate a watch environment
   
@@ -76,6 +189,12 @@ void setup()
   ARM_LENGTH = (int)(19 * PPCM);
   ARM_HEIGHT = (int)(11.2 * PPCM);
   ARROW_SIZE = (int)(2.2 * PPCM);
+    
+  minX = width/2 - 2.0*PPCM;
+  minY = height/2 - 1.0*PPCM;
+  comp = 4.0*PPCM;
+  alt = 3.0*PPCM;
+  
 }
 
 void draw()
@@ -117,31 +236,46 @@ void draw()
     text("ACCEPT >", width/2, 220);
     
     // Draw screen areas
-    // simulates text box - not interactive
+    //TEXT BOX####################################################################################################################################################################################################################################################################################################################################################################
     noStroke();
-    fill(125);
+    fill(0);
     rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
     textAlign(CENTER);
-    fill(0);
+    fill(255);
     textFont(createFont("Arial", 16));  // set the font to arial 24
-    text("NOT INTERACTIVE", width/2, height/2 - 1.3 * PPCM);             // draw current letter
+    text(topText, width/2, height/2 - 1.3 * PPCM);             // draw current letter
     textFont(createFont("Arial", 24));  // set the font to arial 24
     
     // THIS IS THE ONLY INTERACTIVE AREA (4cm x 4cm); do not change size
-    stroke(0, 255, 0);
-    noFill();
-    rect(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM);
+    noStroke();
+    fill(0);
+    rect(minX, minY, comp, alt);
+    //desenha os butões
+    String[] caracteres={" abc", " def", " ghi", "  jkl", "  mn", " opq", "  rst", " uvw", " xyz"};
+    int m = 0;
+    textAlign(LEFT);
+    float x, y;
+    int i,j;
+    for(y = minY, i=0; i<3 ;i++,y+=alt/3){
+         for(x = minX, j=0; j<3; j++, x+=comp/3, m++){
+             fill(60);
+             rect(x,y,comp/3, alt/3, 10);
+             fill(255);
+             text(caracteres[m], x, y+alt/4);
+         }
+    }
     
+    /*
     // Write current letter
     textAlign(CENTER);
-    fill(0);
+    fill(255);
     text("" + currentLetter, width/2, height/2);             // draw current letter
     
     // Draw next and previous arrows
     noFill();
     imageMode(CORNER);
     image(leftArrow, width/2 - ARROW_SIZE, height/2, ARROW_SIZE, ARROW_SIZE);
-    image(rightArrow, width/2, height/2, ARROW_SIZE, ARROW_SIZE);  
+    image(rightArrow, width/2, height/2, ARROW_SIZE, ARROW_SIZE);  */
   }
   
   // Draw the user finger to illustrate the issues with occlusion (the fat finger problem)
@@ -155,13 +289,79 @@ boolean didMouseClick(float x, float y, float w, float h)
   return (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h);
 }
 
+void mouseReleased(){
+    if(startTime<10) return;
+    if(dist(clickX, clickY, mouseX, mouseY) > DRAG_OFFSET){
+        if(mouseX>clickX){//space
+            System.out.println("space");
+            if(currentTyped.length() > 0)
+                currentTyped+=" ";
+            currentTyped+=frase.getWord().getWord(); 
+            frase.addWord();
+        }
+        else{//backspace
+            System.out.println("delete");
+            frase.getWord().deleteKey();
+            //if (currentTyped.length() > 0){
+            //    currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+            //}
+        }
+    }
+    if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM)){    //largou dentro do retangulo?
+        checkGrid(mouseX, mouseY);
+        switch(row){
+          case 0: 
+            switch(col){
+              case 0:
+              frase.getWord().addKey(new  Key(0));
+              break;
+              case 1: 
+              frase.getWord().addKey(new  Key(1));
+              break;
+              case 2: 
+              frase.getWord().addKey(new  Key(2));
+              break;
+            }
+          break;
+          case 1: 
+          switch(col){
+              case 0:
+              frase.getWord().addKey(new  Key(3));
+              break;
+              case 1: 
+              frase.getWord().addKey(new  Key(4));
+              break;
+              case 2: 
+              frase.getWord().addKey(new  Key(5));
+              break;
+            }
+          break;
+          case 2: 
+          switch(col){
+              case 0:
+              frase.getWord().addKey(new  Key(6));
+              break;
+              case 1: 
+              frase.getWord().addKey(new  Key(7));
+              break;
+              case 2: 
+              frase.getWord().addKey(new  Key(8));
+              break;
+            }
+          break;
+        }
+    }   
+}
+
 void mousePressed()
 {
+  clickX=mouseX;
+  clickY=mouseY; 
   if (didMouseClick(width/2 - 2*PPCM, 170, 4.0*PPCM, 2.0*PPCM)) nextTrial();                         // Test click on 'accept' button - do not change this!
   else if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM))  // Test click on 'keyboard' area - do not change this condition! 
   {
     // YOUR KEYBOARD IMPLEMENTATION NEEDS TO BE IN HERE! (inside the condition)
-    
+    /*
     // Test click on left arrow
     if (didMouseClick(width/2 - ARROW_SIZE, height/2, ARROW_SIZE, ARROW_SIZE))
     {
@@ -181,9 +381,27 @@ void mousePressed()
       else if (currentLetter == '`' && currentTyped.length() > 0)    // if `, treat that as a delete command
         currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
       else if (currentLetter != '`') currentTyped += currentLetter;  // if not any of the above cases, add the current letter to the typed string
-    }
+    }*/
   }
   else System.out.println("debug: CLICK NOT ACCEPTED");
+}
+
+void checkGrid(float x, float y){
+    if(x<minX+comp/3)
+      col=0;
+    else if(x<minX+2*(comp/3))
+      col=1;
+    else
+      col=2;
+    
+    if(y<minY+alt/3)
+      row=0;
+    else if(y<minY+2*(alt/3))
+      row=1;
+    else
+      row=2;
+      
+    //System.out.println(col + " " + row);
 }
 
 
