@@ -202,7 +202,7 @@ void printResults(float timeTaken, float penalty)
   text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
   text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
   
-  saveFrame("grupo4-results-######.png");    // saves screenshot in current folder
+  saveFrame("ist19XXXX_G04_<tentativa######>.png");    // saves screenshot in current folder
 }
 
 int findCloser(){

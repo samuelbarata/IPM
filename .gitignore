@@ -7,3 +7,5 @@ results*
 ppi.txt
 BakeOff2/application*
 .autosave
+BakeOff2/filme/**/*
+BakeOff3/filme/**/*
