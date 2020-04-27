@@ -42,9 +42,14 @@ float lettersEnteredTotal  = 0;     // a running total of the number of letters 
 float lettersExpectedTotal = 0;     // a running total of the number of letters expected (correct phrases)
 float errorsTotal          = 0;     // a running total of the number of errors (when hitting next)
 
+
+//
+String[] dicionario;
+
 //Setup window and vars - runs once
 void setup()
 {
+  dicionario = loadStrings("palavras.txt");
   //size(900, 900);
   fullScreen();
   textFont(createFont("Arial", 24));  // set the font to arial 24
