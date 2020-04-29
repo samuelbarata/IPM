@@ -48,20 +48,79 @@ int DRAG_OFFSET = 10;
 ArrayList<String> dicionario;
 float minX, minY, comp, alt;
 String topText="NOT INTERACTIVE";
-String[] caracteres={" abc", " def", " ghi", "  jkl", "  mn", " opq", "  rst", " uvw", " xyz"};
 float clickX, clickY;
 int row, col;    //linha e coluna clicadas
 Sentence frase;
+int sugestion = 9; //tecla a sugerir    NOT USED
+int estado = 0;
 
 public class Key{
+    public ArrayList <Character> options;
     public Integer _key;
+    
     public Key(int key){
+        this(key, '*');
+    }
+    
+    public Key(int key, char c){
       _key=key;
+      options = new ArrayList();
+      switch(key){
+          case 0:
+              options.add(c);
+              break;
+          case 1:
+              options.add('a');
+              options.add('b');
+              options.add('c');
+              break;
+          case 2:
+              options.add('d');
+              options.add('e');
+              options.add('f');
+              break;
+          case 3:
+              options.add('g');
+              options.add('h');
+              options.add('i');
+              break;
+          case 4:
+              options.add('j');
+              options.add('k');
+              options.add('l');
+              break;
+          case 5:
+              options.add('m');
+              options.add('n');
+              options.add('o');
+              break;
+          case 6:
+              options.add('p');
+              options.add('q');
+              options.add('r');
+              options.add('s');
+              break;
+          case 7:
+              options.add('t');
+              options.add('u');
+              options.add('v');
+              break;
+          case 8:
+              options.add('w');
+              options.add('x');
+              options.add('y');
+              options.add('z');
+              break;
+      }
+    }
+    
+    public ArrayList<Character> getChar(){
+        return options;
     }
 }
 public class Word{
    public ArrayList<Key> _keys;
-   public String _probable = "i";
+   public String _probable = "";
    
    public Word(){
        _keys = new ArrayList();
@@ -70,62 +129,60 @@ public class Word{
        _keys.add(key);
        analyse();
    }
-   public void deleteKey(){
+   public boolean deleteKey(){
+       if(_keys.size()==0){
+           if (currentTyped.length() > 0){
+               try{
+                   while(currentTyped.charAt(currentTyped.length() - 1) != ' ')    //apaga a ultima palavra
+                       currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+                   //apaga o espaço
+                   currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+                   return true;  //esta palavra morre
+               } catch(StringIndexOutOfBoundsException e){return false;}//primeira palavra
+           }
+       }
        if(_keys.size()>0)
            _keys.remove(_keys.size()-1);
        analyse();
+       return false;
    }
    public String getWord(){
        return _probable;
    }
-   private void analyse(){
+   public void analyse(){
        if(_keys.size()==0){
-           _probable = "?";
+           _probable = dicionario.get(0);
            topText=_probable;
-           System.out.println("Br0");
+           System.out.println("empty");
            return;
        }
        boolean aux = false;
-       for(String k:dicionario){            //percorre dicionario
+       for(String k:dicionario){                      //percorre dicionario
            if(k.length() < _keys.size()) continue;        //compara tamanho palavras
            aux=true;
-           for(int i = 0; i<_keys.size();i++){//compara os caracteres
+           for(int i = 0; i<_keys.size();i++){                //compara os caracteres
                char[] ch = k.toCharArray();
-               if(!isKey(_keys.get(i), ch[i])){
+               if(!isKey(_keys.get(i), ch[i])){               //verifica se as algumas  dasteclas primidas encaixa na sugestao
                    aux=false;
                    break;
                }
            }
            if(aux){
                _probable = k;
-               topText=_probable;
+               topText = _probable.substring(0,_keys.size()) + " | " + _probable.substring(_keys.size(),_probable.length());
+               //topText=_probable;
                return;
            }
        }
        _probable = "?";
        topText=_probable;
-       System.out.println("Bro");
+       System.out.println("?");
    }
    private boolean isKey(Key key, char c){
-       switch(key._key){
-         case 0:
-             return c=='a' || c=='b' || c=='c';
-         case 1:
-             return c=='d' || c=='e' || c=='f';
-         case 2:
-             return c=='g' || c=='h' || c=='i';
-         case 3:
-             return c=='j' || c=='k' || c=='l';
-         case 4:
-             return c=='m' || c=='n';
-         case 5:
-             return c=='o' || c=='p' || c=='q';
-         case 6:
-             return c=='r' || c=='s' || c=='t';
-         case 7:
-             return c=='u' || c=='v' || c=='w';
-         case 8:
-             return c=='x' || c=='y' || c=='z';
+       ArrayList<Character> keys = key.getChar();
+       for(Character k:keys){
+           if(k==c)
+               return true;
        }
        return false;
    }
@@ -147,6 +204,13 @@ public class Sentence{
    */
    public Word getWord(){
        return _words.get(_words.size()-1);
+   }
+   public void deleteChar(){
+       if(_words.get(_words.size()-1).deleteKey()){
+           if(_words.size() > 1)    //se n for a primeira palavra
+               _words.remove(_words.size()-1);
+       }
+       _words.get(_words.size()-1).analyse();
    }
 }
 
@@ -251,7 +315,6 @@ void draw()
     fill(0);
     rect(minX, minY, comp, alt);
     //desenha os butões
-    String[] caracteres={" abc", " def", " ghi", "  jkl", "  mn", " opq", "  rst", " uvw", " xyz"};
     int m = 0;
     textAlign(LEFT);
     float x, y;
@@ -261,7 +324,13 @@ void draw()
              fill(60);
              rect(x,y,comp/3, alt/3, 10);
              fill(255);
-             text(caracteres[m], x, y+alt/4);
+             String text = "";
+             for(Character c:new Key(m).getChar()){
+                 text+=c;
+             }
+             //if(m==sugestion)    //NOT USED
+             //    fill(0,255,0);  //NOT USED
+             text(text, x, y+alt/4);
          }
     }
     
@@ -290,8 +359,11 @@ boolean didMouseClick(float x, float y, float w, float h)
 }
 
 void mouseReleased(){
-    if(startTime<10) return;
-    if(dist(clickX, clickY, mouseX, mouseY) > DRAG_OFFSET){
+    if(estado==0){
+        estado++;
+        return;
+    }
+    if(dist(clickX, clickY, mouseX, mouseY) > DRAG_OFFSET && clickX != 0){    //começou dentro do ecrã e arrastou para algum lado
         if(mouseX>clickX){//space
             System.out.println("space");
             if(currentTyped.length() > 0)
@@ -301,10 +373,7 @@ void mouseReleased(){
         }
         else{//backspace
             System.out.println("delete");
-            frase.getWord().deleteKey();
-            //if (currentTyped.length() > 0){
-            //    currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
-            //}
+            frase.deleteChar();
         }
     }
     if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM)){    //largou dentro do retangulo?
@@ -355,8 +424,8 @@ void mouseReleased(){
 
 void mousePressed()
 {
-  clickX=mouseX;
-  clickY=mouseY; 
+  clickX=0;
+  clickY=0; 
   if (didMouseClick(width/2 - 2*PPCM, 170, 4.0*PPCM, 2.0*PPCM)) nextTrial();                         // Test click on 'accept' button - do not change this!
   else if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM))  // Test click on 'keyboard' area - do not change this condition! 
   {
@@ -382,6 +451,8 @@ void mousePressed()
         currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
       else if (currentLetter != '`') currentTyped += currentLetter;  // if not any of the above cases, add the current letter to the typed string
     }*/
+    clickX=mouseX;
+    clickY=mouseY;
   }
   else System.out.println("debug: CLICK NOT ACCEPTED");
 }

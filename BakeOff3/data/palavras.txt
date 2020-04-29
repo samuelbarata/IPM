@@ -1,8 +1,10 @@
 the
 of
+a
+an
 and
 to
-a
+i
 in
 for
 is
@@ -2475,6 +2477,7 @@ hong
 vice
 associate
 ne
+stuck
 truck
 behavior
 enlarge
