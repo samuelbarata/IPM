@@ -121,15 +121,20 @@ public class Key{
 public class Word{
    public ArrayList<Key> _keys;
    public String _probable = "";
+   private int _passer = 0;
    
    public Word(){
        _keys = new ArrayList();
    }
    public void addKey(Key key){
-       _keys.add(key);
+       if(key._key==0)
+           _passer++;
+       else
+           _keys.add(key);
        analyse();
    }
    public boolean deleteKey(){
+       _passer=0;
        if(_keys.size()==0){
            if (currentTyped.length() > 0){
                try{
@@ -157,6 +162,7 @@ public class Word{
            return;
        }
        boolean aux = false;
+       int passer = _passer;
        for(String k:dicionario){                      //percorre dicionario
            if(k.length() < _keys.size()) continue;        //compara tamanho palavras
            aux=true;
@@ -166,6 +172,10 @@ public class Word{
                    aux=false;
                    break;
                }
+           }
+           if(passer>0){
+               passer--;    //Avança para match seguinte
+               continue;
            }
            if(aux){
                _probable = k;
