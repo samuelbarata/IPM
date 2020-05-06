@@ -1,6 +1,6 @@
 // Bakeoff #3 - Escrita de Texto em Smartwatches
 // IPM 2019-20, Semestre 2
-// Entrega: exclusivamente no dia 22 de Maio, até às 23h59, via Twitter
+// Entrega: exclusivamente no dia 22 de Maio, até às 23h59, via Discord
 
 // Processing reference: https://processing.org/reference/
 
@@ -236,8 +236,8 @@ void setup()
       dicionario.add(tmp[i]);
   }
   
-  size(900, 900);
-  //fullScreen();
+  //size(900, 900);
+  fullScreen();
 
   textFont(createFont("Arial", 24));  // set the font to arial 24
   noCursor();                         // hides the cursor to emulate a watch environment
@@ -296,18 +296,18 @@ void draw()
   {
     textAlign(LEFT);
     fill(100);
-    text("Phrase " + (currTrialNum + 1) + " of " + NUM_REPEATS, width/2 - 4.0*PPCM, 50);   // write the trial count
+    text("Phrase " + (currTrialNum + 1) + " of " + NUM_REPEATS, width/2 - 4.0*PPCM, height/2 - 8.1*PPCM);   // write the trial count
     text("Target:    " + currentPhrase, width/2 - 4.0*PPCM, 100);                           // draw the target string
     fill(0);
-    text("Entered:  " + currentTyped + "|", width/2 - 4.0*PPCM, 140);                      // draw what the user has entered thus far 
+    text("Entered:  " + currentTyped + "|", width/2 - 4.0*PPCM, height/2 - 6.1*PPCM);                      // draw what the user has entered thus far 
     
     // Draw very basic ACCEPT button - do not change this!
     textAlign(CENTER);
     noStroke();
     fill(0, 250, 0);
-    rect(width/2 - 2*PPCM, 170, 4.0*PPCM, 2.0*PPCM);
+    rect(width/2 - 2*PPCM, height/2 - 5.1*PPCM, 4.0*PPCM, 2.0*PPCM);
     fill(0);
-    text("ACCEPT >", width/2, 220);
+    text("ACCEPT >", width/2, height/2 - 4.1*PPCM);
     
     // Draw screen areas
     //TEXT BOX####################################################################################################################################################################################################################################################################################################################################################################
@@ -380,10 +380,12 @@ void mouseReleased(){
                 currentTyped+=" ";
             currentTyped+=frase.getWord().getWord(); 
             frase.addWord();
+            return;
         }
         else{//backspace
             System.out.println("delete");
             frase.deleteChar();
+            return;
         }
     }
     if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM)){    //largou dentro do retangulo?
@@ -436,7 +438,7 @@ void mousePressed()
 {
   clickX=0;
   clickY=0; 
-  if (didMouseClick(width/2 - 2*PPCM, 170, 4.0*PPCM, 2.0*PPCM)) nextTrial();                         // Test click on 'accept' button - do not change this!
+  if (didMouseClick(width/2 - 2*PPCM, height/2 - 5.1*PPCM, 4.0*PPCM, 2.0*PPCM)) nextTrial();                         // Test click on 'accept' button - do not change this!
   else if(didMouseClick(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM))  // Test click on 'keyboard' area - do not change this condition! 
   {
     // YOUR KEYBOARD IMPLEMENTATION NEEDS TO BE IN HERE! (inside the condition)
