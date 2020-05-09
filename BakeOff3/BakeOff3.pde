@@ -122,6 +122,9 @@ public class Word{
    public ArrayList<Key> _keys;
    public String _probable = "";
    private int _passer = 0;
+        public int conter = 0;
+        
+        ArrayList<String> _strings = new ArrayList<String>();
    
    public Word(){
        _keys = new ArrayList();
@@ -131,6 +134,7 @@ public class Word{
            _passer++;
        else
            _keys.add(key);
+           
        analyse();
    }
    public boolean deleteKey(){
@@ -155,6 +159,8 @@ public class Word{
        return _probable;
    }
    public void analyse(){
+     _strings.add("");
+
        if(_keys.size()==0){
            _probable = dicionario.get(0);
            topText=_probable;
@@ -163,22 +169,33 @@ public class Word{
        }
        boolean aux = false;
        int passer = _passer;
+
        for(String k:dicionario){                      //percorre dicionario
            if(k.length() < _keys.size()) continue;        //compara tamanho palavras
+           System.out.println("K = " + k);
+           if(k.equals(_strings.get(conter))) continue;
            aux=true;
-           for(int i = 0; i<_keys.size();i++){                //compara os caracteres
-               char[] ch = k.toCharArray();
-               if(!isKey(_keys.get(i), ch[i])){               //verifica se as algumas  dasteclas primidas encaixa na sugestao
+           char[] ch = k.toCharArray(); //compara inicio de palavras iguais? nao, faz home -> good -> home | page
+           for(int i = 0; i<_keys.size();i++){               //compara os caracteres
+               if(!isKey(_keys.get(i), ch[i])){              //verifica se as algumas  dasteclas primidas encaixa na sugestao
                    aux=false;
                    break;
                }
+     
+               
            }
+           
            if(passer>0){
+             //System.out.println(passer);
                passer--;    //Avança para match seguinte
                continue;
            }
            if(aux){
+             _strings.add(k);
+             conter++;
+               System.out.println(k);
                _probable = k;
+               
                topText = _probable.substring(0,_keys.size()) + " | " + _probable.substring(_keys.size(),_probable.length());
                //topText=_probable;
                return;
@@ -331,7 +348,7 @@ void draw()
     int i,j;
     for(y = minY, i=0; i<3 ;i++,y+=alt/3){
          for(x = minX, j=0; j<3; j++, x+=comp/3, m++){
-             fill(60);
+             fill(90);
              rect(x,y,comp/3, alt/3, 10);
              fill(255);
              String text = "";
@@ -340,7 +357,7 @@ void draw()
              }
              //if(m==sugestion)    //NOT USED
              //    fill(0,255,0);  //NOT USED
-             text(text, x, y+alt/4);
+             text(text, x+20, y+alt/4);
          }
     }
     
