@@ -53,6 +53,7 @@ int row, col;    //linha e coluna clicadas
 Sentence frase;
 int sugestion = 9; //tecla a sugerir    NOT USED
 int estado = 0;
+int typed;
 
 public class Key{
     public ArrayList <Character> options;
@@ -122,9 +123,9 @@ public class Word{
    public ArrayList<Key> _keys;
    public String _probable = "";
    private int _passer = 0;
-        public int conter = 0;
-        
-        ArrayList<String> _strings = new ArrayList<String>();
+   public int conter = 0;
+  
+   ArrayList<String> _strings = new ArrayList<String>();
    
    public Word(){
        _keys = new ArrayList();
@@ -172,7 +173,7 @@ public class Word{
 
        for(String k:dicionario){                      //percorre dicionario
            if(k.length() < _keys.size()) continue;        //compara tamanho palavras
-           System.out.println("K = " + k);
+           //System.out.println("K = " + k);
            if(k.equals(_strings.get(conter))) continue;
            aux=true;
            char[] ch = k.toCharArray(); //compara inicio de palavras iguais? nao, faz home -> good -> home | page
@@ -193,11 +194,12 @@ public class Word{
            if(aux){
              _strings.add(k);
              conter++;
-               System.out.println(k);
+               //System.out.println(k);
                _probable = k;
                
-               topText = _probable.substring(0,_keys.size()) + " | " + _probable.substring(_keys.size(),_probable.length());
-               //topText=_probable;
+               //topText = _probable.substring(0,_keys.size()) + " | " + _probable.substring(_keys.size(),_probable.length());
+               topText=_probable;
+               typed=_keys.size();
                return;
            }
        }
@@ -253,9 +255,9 @@ void setup()
       dicionario.add(tmp[i]);
   }
   
-  //size(900, 900);
-  fullScreen();
-
+  size(900, 900);
+  //fullScreen();
+  frameRate(60);
   textFont(createFont("Arial", 24));  // set the font to arial 24
   noCursor();                         // hides the cursor to emulate a watch environment
   
@@ -333,8 +335,36 @@ void draw()
     rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
     textAlign(CENTER);
     fill(255);
-    textFont(createFont("Arial", 16));  // set the font to arial 24
-    text(topText, width/2, height/2 - 1.3 * PPCM);             // draw current letter
+    textFont(createFont("Arial", 18));  // set the font to arial 24
+    //text(topText, width/2, height/2 - 1.3 * PPCM);             // draw current letter
+    
+    
+    textFont(createFont("SourceCodePro-Light.ttf", 18));
+    
+    
+    String ini="";
+    String preview=" ";
+    
+    int i = 0;
+    for(char ch: topText.toCharArray()){
+        if(i<typed){
+            ini+=ch;
+            preview+=" ";
+        } else{
+            ini+=" ";
+            preview+=ch;
+        }
+        i++;
+    }
+    
+    
+    fill(255,255,255);
+    text(ini, width/2, height/2 - 1.3 * PPCM);
+    fill(20,255,20);
+    text(preview, width/2, height/2 - 1.3 * PPCM);
+
+    
+    
     textFont(createFont("Arial", 24));  // set the font to arial 24
     
     // THIS IS THE ONLY INTERACTIVE AREA (4cm x 4cm); do not change size
@@ -345,7 +375,7 @@ void draw()
     int m = 0;
     textAlign(LEFT);
     float x, y;
-    int i,j;
+    int j;
     for(y = minY, i=0; i<3 ;i++,y+=alt/3){
          for(x = minX, j=0; j<3; j++, x+=comp/3, m++){
              fill(90);
@@ -357,7 +387,7 @@ void draw()
              }
              //if(m==sugestion)    //NOT USED
              //    fill(0,255,0);  //NOT USED
-             text(text, x+20, y+alt/4);
+             text(text, x, y+alt/4);
          }
     }
     
