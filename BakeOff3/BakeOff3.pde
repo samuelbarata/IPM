@@ -125,17 +125,18 @@ public class Word{
    private int _passer = 0;
    public int conter = 0;
   
-   ArrayList<String> _strings = new ArrayList<String>();
    
    public Word(){
        _keys = new ArrayList();
+       typed=0;
    }
    public void addKey(Key key){
        if(key._key==0)
            _passer++;
-       else
+       else{
            _keys.add(key);
-           
+           _passer=0;
+       }
        analyse();
    }
    public boolean deleteKey(){
@@ -160,11 +161,10 @@ public class Word{
        return _probable;
    }
    public void analyse(){
-     _strings.add("");
-
        if(_keys.size()==0){
            _probable = dicionario.get(0);
            topText=_probable;
+           typed=0;
            System.out.println("empty");
            return;
        }
@@ -173,27 +173,21 @@ public class Word{
 
        for(String k:dicionario){                      //percorre dicionario
            if(k.length() < _keys.size()) continue;        //compara tamanho palavras
-           //System.out.println("K = " + k);
-           if(k.equals(_strings.get(conter))) continue;
            aux=true;
            char[] ch = k.toCharArray(); //compara inicio de palavras iguais? nao, faz home -> good -> home | page
            for(int i = 0; i<_keys.size();i++){               //compara os caracteres
-               if(!isKey(_keys.get(i), ch[i])){              //verifica se as algumas  dasteclas primidas encaixa na sugestao
+               if(!isKey(_keys.get(i), ch[i])){              //verifica se as algumas das teclas primidas encaixa na sugestao
                    aux=false;
                    break;
                }
-     
-               
-           }
-           
-           if(passer>0){
-             //System.out.println(passer);
-               passer--;    //Avança para match seguinte
-               continue;
            }
            if(aux){
-             _strings.add(k);
-             conter++;
+               if(passer>0){
+                   //System.out.println(passer);
+                   passer--;    //Avança para match seguinte
+                   continue;
+               }
+               conter++;
                //System.out.println(k);
                _probable = k;
                
