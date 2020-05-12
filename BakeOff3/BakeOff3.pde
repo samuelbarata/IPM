@@ -314,7 +314,7 @@ void draw()
     textAlign(LEFT);
     fill(100);
     text("Phrase " + (currTrialNum + 1) + " of " + NUM_REPEATS, width/2 - 4.0*PPCM, height/2 - 8.1*PPCM);   // write the trial count
-    text("Target:    " + currentPhrase, width/2 - 4.0*PPCM, 100);                           // draw the target string
+    text("Target:    " + currentPhrase, width/2 - 4.0*PPCM, height/2 - 7.1*PPCM);                           // draw the target string
     fill(0);
     text("Entered:  " + currentTyped + "|", width/2 - 4.0*PPCM, height/2 - 6.1*PPCM);                      // draw what the user has entered thus far 
     
