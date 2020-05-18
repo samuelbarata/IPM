@@ -295,11 +295,13 @@ void draw()
   imageMode(CENTER);
   image(arm, width/2, height/2, ARM_LENGTH, ARM_HEIGHT);
   
+
   // Check if we just started the application
   if (startTime == 0 && !mousePressed)
   {
     fill(0);
     textAlign(CENTER);
+    textFont(createFont("Arial", 24));  // set the font to arial 24
     text("Tap to start time!", width/2, height/2);
   }
   else if (startTime == 0 && mousePressed) nextTrial();                    // show next sentence
@@ -307,6 +309,7 @@ void draw()
   // Check if we are in the middle of a trial
   else if (startTime != 0)
   {
+    textFont(createFont("Arial", 24));
     textAlign(LEFT);
     fill(100);
     text("Phrase " + (currTrialNum + 1) + " of " + NUM_REPEATS, width/2 - 4.0*PPCM, height/2 - 8.1*PPCM);   // write the trial count
@@ -328,14 +331,8 @@ void draw()
     fill(0);
     rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
     textAlign(CENTER);
-    fill(255);
-    textFont(createFont("Arial", 18));  // set the font to arial 24
-    //text(topText, width/2, height/2 - 1.3 * PPCM);             // draw current letter
-    
-    
-    textFont(createFont("SourceCodePro-Light.ttf", 18));
-    
-    
+    fill(255);    
+    textFont(createFont("DroidSansMono.ttf", 16));
     String ini="";
     String preview=" ";
     
@@ -359,7 +356,7 @@ void draw()
 
     
     
-    textFont(createFont("Arial", 24));  // set the font to arial 24
+    textFont(createFont("DroidSansMono.ttf", 20));
     
     // THIS IS THE ONLY INTERACTIVE AREA (4cm x 4cm); do not change size
     noStroke();
