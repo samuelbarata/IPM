@@ -56,6 +56,8 @@ Sentence frase;
 int sugestion = 9; //tecla a sugerir    NOT USED
 int estado = 0;
 int typed;
+String last="";
+ArrayList<Key> keys;
 
 public class Key{
     public ArrayList <Character> options;
@@ -71,48 +73,57 @@ public class Key{
       switch(key){
           case 0:
               options.add(c);
+              last="   c";
               break;
           case 1:
               options.add('a');
               options.add('b');
               options.add('c');
+              last=" abc";
               break;
           case 2:
               options.add('d');
               options.add('e');
               options.add('f');
+              last=" def";
               break;
           case 3:
               options.add('g');
               options.add('h');
               options.add('i');
+              last=" ghi";
               break;
           case 4:
               options.add('j');
               options.add('k');
               options.add('l');
+              last=" jkl";
               break;
           case 5:
               options.add('m');
               options.add('n');
               options.add('o');
+              last=" mno";
               break;
           case 6:
               options.add('p');
               options.add('q');
               options.add('r');
               options.add('s');
+              last="pqrs";
               break;
           case 7:
               options.add('t');
               options.add('u');
               options.add('v');
+              last=" tuv";
               break;
           case 8:
               options.add('w');
               options.add('x');
               options.add('y');
               options.add('z');
+              last="wxyz";
               break;
       }
     }
@@ -245,6 +256,11 @@ void setup()
 {
   String[] tmp;
   dicionario = new ArrayList();
+  keys = new ArrayList();
+  for(int k=0; k<9;k++){
+    keys.add(new Key(k));
+  }
+  last="";
   frase = new Sentence();
   tmp = loadStrings("palavras.txt");
   for (int i=0; i<tmp.length; i++) {
@@ -272,7 +288,8 @@ void setup()
   String[] ppi_string = loadStrings("ppi.txt");   // the text from the file is loaded into an array.
   PPI = float(ppi_string[1]);                     // set PPI, we assume the ppi value is in the second line of the .txt
   PPCM = PPI / 2.54 * SCALE_FACTOR;               // do not change this!
-  
+  //System.out.println("PPCM: " + PPCM);
+
   FINGER_SIZE = (int)(11 * PPCM);
   FINGER_OFFSET = (int)(0.8 * PPCM);
   ARM_LENGTH = (int)(19 * PPCM);
@@ -334,7 +351,7 @@ void draw()
     rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
     textAlign(CENTER);
     fill(255);    
-    textFont(createFont("DroidSansMono.ttf", 16));
+    textFont(createFont("DroidSansMono.ttf", PPCM/2.7));
     String ini="";
     String preview=" ";
     
@@ -348,17 +365,18 @@ void draw()
             preview+=ch;
         }
         i++;
-    }
-    
-    
+    }    
     fill(255,255,255);
     text(ini, width/2, height/2 - 1.3 * PPCM);
     fill(20,255,20);
     text(preview, width/2, height/2 - 1.3 * PPCM);
 
+    fill(255); 
+    textFont(createFont("DroidSansMono.ttf", PPCM/3.2));
+    text(last, (width/2)+(1.5*PPCM), (height/2) -0.9 * PPCM);    
     
     
-    textFont(createFont("DroidSansMono.ttf", 20));
+    textFont(createFont("DroidSansMono.ttf", PPCM/2.15));
     
     // THIS IS THE ONLY INTERACTIVE AREA (4cm x 4cm); do not change size
     noStroke();
@@ -375,7 +393,7 @@ void draw()
              rect(x,y,comp/3, alt/3, 10);
              fill(255);
              String text = "";
-             for(Character c:new Key(m).getChar()){
+             for(Character c:keys.get(m).getChar()){
                  text+=c;
              }
              //if(m==sugestion)    //NOT USED
@@ -420,11 +438,13 @@ void mouseReleased(){
                 currentTyped+=" ";
             currentTyped+=frase.getWord().getWord(); 
             frase.addWord();
+            last=" ->";
             return;
         }
         else{//backspace
             System.out.println("delete");
             frase.deleteChar();
+            last=" <-";
             return;
         }
     }
@@ -445,7 +465,7 @@ void mouseReleased(){
             }
           break;
           case 1: 
-          switch(col){
+            switch(col){
               case 0:
               frase.getWord().addKey(new  Key(3));
               break;
@@ -458,14 +478,14 @@ void mouseReleased(){
             }
           break;
           case 2: 
-          switch(col){
+            switch(col){
               case 0:
               frase.getWord().addKey(new  Key(6));
               break;
               case 1: 
               frase.getWord().addKey(new  Key(7));
               break;
-              case 2: 
+              case 2:
               frase.getWord().addKey(new  Key(8));
               break;
             }
