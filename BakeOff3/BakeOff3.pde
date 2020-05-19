@@ -373,7 +373,7 @@ void draw()
 
     fill(255); 
     textFont(createFont("DroidSansMono.ttf", PPCM/3.2));
-    text(last, (width/2)+(1.5*PPCM), (height/2) -0.9 * PPCM);    
+    text(last, (width/2)+(1.5*PPCM), (height/2) -1.1 * PPCM);    
     
     
     textFont(createFont("DroidSansMono.ttf", PPCM/2.15));
