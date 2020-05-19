@@ -548,6 +548,7 @@ void nextTrial()
     lettersExpectedTotal += currentPhrase.trim().length();
     lettersEnteredTotal += currentTyped.trim().length();
     errorsTotal += computeLevenshteinDistance(currentTyped.trim(), currentPhrase.trim());
+    typedZZZ[currTrialNum] = currentTyped;
   }
   
   // Check to see if experiment just finished
@@ -563,12 +564,12 @@ void nextTrial()
 
     float wpm = (lettersEnteredTotal / 5.0f) / ((finishTime - startTime) / 60000f);   // FYI - 60K is number of milliseconds in minute
     float freebieErrors = lettersExpectedTotal * .05;                                 // no penalty if errors are under 5% of chars
-    float penalty = max(errorsTotal - freebieErrors, 0) * .5f;
+    float penalty = max(0, (errorsTotal - freebieErrors) / ((finishTime - startTime) / 60000f));
     
     System.out.println("Raw WPM: " + wpm);
     System.out.println("Freebie errors: " + freebieErrors);
     System.out.println("Penalty: " + penalty);
-    System.out.println("WPM w/ penalty: " + (wpm - penalty));                         // yes, minus, because higher WPM is better
+    System.out.println("WPM w/ penalty: " + (wpm - penalty));                         // yes, minus, because higher WPM is better: NET WPM
     System.out.println("==================");
     
     printResults(wpm, freebieErrors, penalty);
@@ -599,12 +600,19 @@ void printResults(float wpm, float freebieErrors, float penalty)
   text(day() + "/" + month() + "/" + year() + "  " + hour() + ":" + minute() + ":" + second(), 100, 20);   // display time on screen
   
   text("Finished!", width / 2, height / 2); 
-  text("Raw WPM: " + wpm, width / 2, height / 2 + 20);
-  text("Freebie errors: " + freebieErrors, width / 2, height / 2 + 40);
-  text("Penalty: " + penalty, width / 2, height / 2 + 60);
-  text("WPM with penalty: " + (wpm - penalty), width / 2, height / 2 + 80);
+  
+  int h = 20;
+  for(int i = 0; i < NUM_REPEATS; i++, h += 40 ) {
+    text("Target phrase " + (i+1) + ": " + phrases[i], width / 2, height / 2 + h);
+    text("User typed " + (i+1) + ": " + typedZZZ[i], width / 2, height / 2 + h+20);
+  }
+  
+  text("Raw WPM: " + wpm, width / 2, height / 2 + h+20);
+  text("Freebie errors: " + freebieErrors, width / 2, height / 2 + h+40);
+  text("Penalty: " + penalty, width / 2, height / 2 + h+60);
+  text("WPM with penalty: " + max((wpm - penalty), 0), width / 2, height / 2 + h+80);
 
-  saveFrame("results-######.png");    // saves screenshot in current folder    
+  saveFrame("######-GX-TX-G4-"+max((wpm - penalty), 0)+".png");    // saves screenshot in current folder    
 }
 
 // This computes the error between two strings (i.e., original phrase and user input)
