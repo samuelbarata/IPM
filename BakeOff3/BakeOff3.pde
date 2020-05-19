@@ -33,6 +33,8 @@ int currTrialNum           = 0;     // the current trial number (indexes into ph
 String currentPhrase       = "";    // the current target phrase
 String currentTyped        = "";    // what the user has typed so far
 char currentLetter         = 'a';
+String[] typedZZZ = new String[NUM_REPEATS];
+
 
 // Performance variables
 float startTime            = 0;     // time starts when the user clicks for the first time
@@ -44,7 +46,7 @@ float errorsTotal          = 0;     // a running total of the number of errors (
 
 
 //
-int DRAG_OFFSET = 10;
+int DRAG_OFFSET = 15;
 ArrayList<String> dicionario;
 float minX, minY, comp, alt;
 String topText="NOT INTERACTIVE";
