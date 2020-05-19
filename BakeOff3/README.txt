@@ -5,8 +5,7 @@ clique MNO, clique JKL, clique ABC;
 isto vai dar a palavra mais usada que contenha uma letra de cada uma das teclas clicadas, por ordem;
 CASO NAO SEJA A PALAVRA QUE QUEREMOS: clicar no simbolo asterisco, isto roda para a próxima palavra com as condicoes anteriores.
 Para acabar a palavra: arraste para a direita, isto tambem acaba de escrever a palavra sugerida: por ex escrevemos abc e sugere abcedario:
-se arrastarmos apra a direita escreve abcedario e vai para a proxima palavra.
+se arrastarmos para a direita escreve abcedario e vai para a proxima palavra.
 Para apagar: arrastar para a esquerda.
 
-
-SUGERIMOS TESTAREM DURANTE 5 SEGS TODAS ESTAS FUNCOES ANTES DE FAZEREM O TESTE
+SUGERIMOS TESTAREM TODAS ESTAS FUNCOES ANTES DE FAZEREM O TESTE
